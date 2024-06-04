@@ -1,29 +1,21 @@
 # element-plus-table-error-repro
 
-This template should help get you started developing with Vue 3 in Vite.
+This project is used to reproduce examples of errors occurring with `ElTableColumn` in complex scenarios.
 
-## Recommended IDE Setup
+Here is the related [Pull Request](https://github.com/element-plus/element-plus/pull/16782).
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+### Scenario
 
-## Customize configuration
+The core of the scenario is:
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+1. Using `<KeepAlive>`
+2. `<ElTableColumn>` controlled by `v-if` and `v-else` for display (`key` has no effect)
+3. The component containing `<ElTableColumn>` is unmounted when **inactive** (e.g., clearing the `include` prop of `<KeepAlive>`)
 
-## Project Setup
+### Actual Scenario
 
-```sh
-pnpm install
-```
+This reproduction scenario may seem stringent, but it is very likely to occur in actual projects.
 
-### Compile and Hot-Reload for Development
+For instance, in a multi-tab management system, the `<KeepAlive>` cache of pages is associated with the open tabs. When switching to another tab, the page containing `<ElTableColumn>` becomes inactive. Due to business requirements, two `<ElTableColumn>` components are mutually exclusive, controlled by user attributes in stores. Upon logging out, the system first clears user information and all cached pages (by clearing the `include` prop of `<KeepAlive>`) before redirecting. At this point, an error occurs with `<ElTableColumn>`.
 
-```sh
-pnpm dev
-```
-
-### Compile and Minify for Production
-
-```sh
-pnpm build
-```
+In [this comment](https://github.com/element-plus/element-plus/pull/16782#issuecomment-2146745790), it is mentioned that if two `<ElTableColumn>` components have the same props, the `default` slot should be used. However, during development, it's more likely to control which `<ElTableColumn>` is displayed using `v-if` and `v-else` due to the convenient features provided by `<ElTableColumn>`, such as `show-overflow-tooltip`.
