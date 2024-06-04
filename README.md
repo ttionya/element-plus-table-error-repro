@@ -4,6 +4,10 @@ This project is used to reproduce examples of errors occurring with `ElTableColu
 
 Here is the related [Pull Request](https://github.com/element-plus/element-plus/pull/16782).
 
+### Usage
+
+Switching between the `Home` and `Table` pages makes the `Current visited route` include both pages. When staying on the `Home` page and clicking the `clear ...` button, the error occurs.
+
 ### Scenario
 
 The core of the scenario is:
